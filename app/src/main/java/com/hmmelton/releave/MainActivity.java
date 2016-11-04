@@ -59,6 +59,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
+        // Cycle through location providers until one finds the user's current location
         Location location = null;
         for (int i = 0; i < providers.size(); i++) {
             location = manager.getLastKnownLocation(providers.get(i));
@@ -67,6 +68,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
+        // User's current latitude and longitude
         double latitude;
         double longitude;
 
@@ -88,6 +90,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.animateCamera(CameraUpdateFactory
                     .newLatLngZoom(new LatLng(latitude, longitude), 14.0f));
 
+            // Display settings
+            mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+            mMap.getUiSettings().setMapToolbarEnabled(true); // Idk why this doesn't work
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+        } else {
 
         }
     }
