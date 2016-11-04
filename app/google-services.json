@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "746863863854",
+    "firebase_url": "https://releave-1478208502521.firebaseio.com",
+    "project_id": "releave-1478208502521",
+    "storage_bucket": "releave-1478208502521.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746863863854:android:3319e52ac7857306",
+        "android_client_info": {
+          "package_name": "com.hmmelton.releave"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "746863863854-1qd6ult7ef8ud1n2q8d7o4b2utn09nnu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hmmelton.releave",
+            "certificate_hash": "16E952A8C5BF4DC81414254C00383330E797FB27"
+          }
+        },
+        {
+          "client_id": "746863863854-rc16ip9sb4f73bcgarc26g6dc07ac5s1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjsLo1UrgAJbK26YsEe5eqsttiQP1TYHU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "746863863854-rc16ip9sb4f73bcgarc26g6dc07ac5s1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
