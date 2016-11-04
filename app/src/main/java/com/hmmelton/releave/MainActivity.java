@@ -1,14 +1,22 @@
 package com.hmmelton.releave;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -37,10 +45,50 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMinZoomPreference(10.0f);
+        mMap.setMaxZoomPreference(16.0f);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = manager.getProviders(true);
+
+        // Check if user has given permission to access location
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        Location location = null;
+        for (int i = 0; i < providers.size(); i++) {
+            location = manager.getLastKnownLocation(providers.get(i));
+            if (location != null) {
+                break;
+            }
+        }
+
+        double latitude;
+        double longitude;
+
+        if (location != null) {
+            // Location was found - grab lat & long
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+
+            // Add a marker at the current location and move the camera
+            LatLng currentLocation = new LatLng(latitude, longitude);
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(currentLocation);
+            markerOptions.title("You are here");
+            Marker locationMarker = mMap.addMarker(markerOptions);
+            locationMarker.showInfoWindow();
+            // Move to location on map
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+            // 14x zoom in on location
+            mMap.animateCamera(CameraUpdateFactory
+                    .newLatLngZoom(new LatLng(latitude, longitude), 14.0f));
+
+
+        }
     }
 }
