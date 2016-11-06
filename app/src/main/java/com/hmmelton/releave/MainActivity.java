@@ -1,6 +1,7 @@
 package com.hmmelton.releave;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,9 +19,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
+    @OnClick(R.id.logo) void onLogoClick() {
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        ButterKnife.bind(this);
     }
 
 
@@ -45,6 +54,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        // Set zoom preferences
         mMap.setMinZoomPreference(10.0f);
         mMap.setMaxZoomPreference(16.0f);
 

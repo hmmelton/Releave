@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Releave</string>
     <string name="title_activity_main">Releave</string>
+
+    <!-- For Facebook API -->
+    <string name="facebook_app_id">107305349752171</string>
+    <!-- For custom Chrome tab login -->
+    <string name="fb_login_protocol_scheme">fb107305349752171</string>
+
+    <!-- Strings for Login Screen -->
+    <string name="or">Or</string>
+    <string name="google_login">Login with Google</string>
 </resources>

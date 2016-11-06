@@ -11,4 +11,16 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar"/>
+
+    <!-- Style for login buttons -->
+    <style name="LoginButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">@dimen/login_button_width</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:padding">@dimen/quarter_standard_margin</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
 </resources>

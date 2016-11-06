@@ -3,4 +3,9 @@
     <dimen name="standard_margin">16dp</dimen>
     <dimen name="half_standard_margin">8dp</dimen>
     <dimen name="quarter_standard_margin">4dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="login_button_width">200dp</dimen>
 </resources>
