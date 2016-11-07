@@ -1,4 +1,4 @@
-package models;
+package com.hmmelton.releave.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;

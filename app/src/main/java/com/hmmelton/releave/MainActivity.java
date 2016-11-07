@@ -1,13 +1,13 @@
 package com.hmmelton.releave;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -26,9 +27,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
 
-    @OnClick(R.id.logo) void onLogoClick() {
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    @OnClick(R.id.fab) void onFabClick() {
+        // TODO: start upload activity
     }
+
+    @BindString(R.string.no_location) String mNoLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +105,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             // Display settings
             mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-            mMap.getUiSettings().setMapToolbarEnabled(true); // Idk why this doesn't work
-            mMap.getUiSettings().setZoomControlsEnabled(true);
+            mMap.getUiSettings().setMapToolbarEnabled(true);
         } else {
-
+            // Alert the user that his/her location could not be found
+            Toast.makeText(this, mNoLocation, Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -7,7 +7,11 @@
     <!-- For custom Chrome tab login -->
     <string name="fb_login_protocol_scheme">fb107305349752171</string>
 
+    <!-- Strings for Main Screen -->
+    <string name="no_location">Could not find location</string>
+
     <!-- Strings for Login Screen -->
     <string name="or">Or</string>
     <string name="google_login">Login with Google</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 </resources>
