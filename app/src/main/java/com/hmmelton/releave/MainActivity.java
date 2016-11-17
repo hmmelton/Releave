@@ -47,8 +47,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         ButterKnife.bind(this);
-    }
 
+    }
 
     /**
      * Manipulates the map once available.

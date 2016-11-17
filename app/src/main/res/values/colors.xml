@@ -5,4 +5,5 @@
     <color name="colorAccent">#fbe766</color>
 
     <color name="semitransparent_black">#cc000000</color>
+    <color name="light_gray">#d3d3d3</color>
 </resources>
