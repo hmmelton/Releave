@@ -14,4 +14,8 @@
     <string name="or">Or</string>
     <string name="google_login">Login with Google</string>
     <string name="title_activity_profile">ProfileActivity</string>
+    
+    <!-- Strings for Profile Screen -->
+    <string name="sign_out">Sign Out</string>
+    <string name="profile">Profile</string>
 </resources>

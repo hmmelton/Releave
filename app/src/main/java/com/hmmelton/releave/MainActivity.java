@@ -1,6 +1,7 @@
 package com.hmmelton.releave;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,8 +15,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
@@ -29,6 +28,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @OnClick(R.id.fab) void onFabClick() {
         // TODO: start upload activity
+    }
+
+    // OnClick for profile image in AppBar
+    @OnClick(R.id.profile_button) void onProfileClick() {
+        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
     }
 
     @BindString(R.string.no_location) String mNoLocation;
@@ -90,13 +94,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             latitude = location.getLatitude();
             longitude = location.getLongitude();
 
-            // Add a marker at the current location and move the camera
+            // Get current latitude & longitude
             LatLng currentLocation = new LatLng(latitude, longitude);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(currentLocation);
-            markerOptions.title("You are here");
-            Marker locationMarker = mMap.addMarker(markerOptions);
-            locationMarker.showInfoWindow();
+
+            /** For future reference - adding a marker: */
+            // MarkerOptions markerOptions = new MarkerOptions();
+            // markerOptions.position(currentLocation);
+            // markerOptions.title("You are here");
+            // Marker locationMarker = mMap.addMarker(markerOptions);
+            // locationMarker.showInfoWindow();
+
             // Move to location on map
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
             // 14x zoom in on location
@@ -106,6 +113,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // Display settings
             mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
             mMap.getUiSettings().setMapToolbarEnabled(true);
+            mMap.setMyLocationEnabled(true);
         } else {
             // Alert the user that his/her location could not be found
             Toast.makeText(this, mNoLocation, Toast.LENGTH_LONG).show();

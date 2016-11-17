@@ -40,6 +40,26 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".Splashscreen"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait">
+        </activity>
 
         <!-- For Facebook API -->
         <activity
@@ -64,26 +84,6 @@
 
                 <data android:scheme="@string/fb_login_protocol_scheme"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".Splashscreen"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ProfileActivity"
-            android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
