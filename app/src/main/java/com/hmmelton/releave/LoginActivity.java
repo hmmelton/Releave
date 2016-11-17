@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +31,11 @@ public class LoginActivity extends AppCompatActivity {
 
     // region Views
     @BindView(R.id.facebook_login)
-    TextView fbLoginButton;
+    protected TextView mFbLoginButton;
     @BindView(R.id.google_login)
-    TextView googleLoginButton;
+    protected TextView mGoogleLoginButton;
+    @BindView(R.id.cover)
+    protected RelativeLayout mCover;
     // endregion
     // region OnClicks
     @OnClick(R.id.facebook_login) void onFBLoginClick() {
@@ -133,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Authentication failed.",
                                 Toast.LENGTH_SHORT).show();
                     } else {
+                        mCover.setVisibility(View.VISIBLE);
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }

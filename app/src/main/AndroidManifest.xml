@@ -60,6 +60,10 @@
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".UploadActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
         <!-- For Facebook API -->
         <activity

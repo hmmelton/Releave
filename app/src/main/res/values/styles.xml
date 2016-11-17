@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -20,7 +20,7 @@
         <item name="android:layout_width">@dimen/login_button_width</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:padding">@dimen/quarter_standard_margin</item>
+        <item name="android:padding">@dimen/half_standard_margin</item>
         <item name="android:layout_centerHorizontal">true</item>
     </style>
 </resources>
