@@ -4,11 +4,12 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/standard_margin"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:showIn="@layout/activity_upload">
 
     <LinearLayout
+        android:id="@+id/hours_section"
+        android:layout_margin="@dimen/half_standard_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -18,40 +19,47 @@
             style="@style/HoursInputLayout">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="@string/weekday_hours"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="@dimen/half_standard_margin"/>
+                style="@style/HoursInputHeader"
+                android:text="@string/weekday_hours"/>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="10">
+                style="@style/HoursInputRow">
 
                 <EditText
-                    android:id="@+id/weekday_from"
-                    android:layout_width="0dp"
-                    android:layout_weight="7"
-                    android:layout_height="30dp"
-                    android:background="@drawable/rounded_edit_text"
-                    android:inputType="time"/>
+                    android:id="@+id/weekday_start_hours"
+                    style="@style/HoursInputBox"/>
 
                 <View
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="0dp"/>
+                    style="@style/HoursInputBlank"/>
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="30dp"
-                    android:background="@color/light_gray"
-                    android:text="@string/am"
-                    android:textColor="@android:color/black"
-                    android:gravity="center"/>
+                    android:id="@+id/weekday_start_am"
+                    style="@style/HoursAMPMButton"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/quarter_standard_margin"
+                android:layout_marginBottom="@dimen/quarter_standard_margin"
+                android:textAlignment="center"
+                android:textSize="10pt"
+                android:text="@string/to"/>
+
+            <LinearLayout
+                style="@style/HoursInputRow">
+
+                <EditText
+                    android:id="@+id/weekday_end_hours"
+                    style="@style/HoursInputBox"/>
+
+                <View
+                    style="@style/HoursInputBlank"/>
+
+                <TextView
+                    android:id="@+id/weekday_end_am"
+                    style="@style/HoursAMPMButton"/>
 
             </LinearLayout>
 
@@ -60,10 +68,117 @@
         <LinearLayout
             style="@style/HoursInputLayout">
 
+            <TextView
+                style="@style/HoursInputHeader"
+                android:text="@string/weekend_hours"/>
 
+            <LinearLayout
+                style="@style/HoursInputRow">
+
+                <EditText
+                    android:id="@+id/weekend_start_hours"
+                    style="@style/HoursInputBox"/>
+
+                <View
+                    style="@style/HoursInputBlank"/>
+
+                <TextView
+                    android:id="@+id/weekend_start_am"
+                    style="@style/HoursAMPMButton"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/quarter_standard_margin"
+                android:layout_marginBottom="@dimen/quarter_standard_margin"
+                android:textAlignment="center"
+                android:textSize="10pt"
+                android:text="@string/to"/>
+
+            <LinearLayout
+                style="@style/HoursInputRow">
+
+                <EditText
+                    android:id="@+id/weekend_end_hours"
+                    style="@style/HoursInputBox"/>
+
+                <View
+                    style="@style/HoursInputBlank"/>
+
+                <TextView
+                    android:id="@+id/weekend_end_am"
+                    style="@style/HoursAMPMButton"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/key_code_section"
+        android:layout_below="@id/hours_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginLeft="@dimen/half_standard_margin"
+        android:layout_marginRight="@dimen/half_standard_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/key_code"
+            android:textColor="@android:color/black"
+            android:textSize="10pt"
+            android:layout_alignParentLeft="true"/>
+
+        <Switch
+            android:id="@+id/key_code_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/location_section"
+        android:layout_below="@id/key_code_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginLeft="@dimen/half_standard_margin"
+        android:layout_marginRight="@dimen/half_standard_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_location"
+            android:textColor="@android:color/black"
+            android:textSize="10pt"
+            android:layout_alignParentLeft="true"/>
+
+        <ImageView
+            android:id="@+id/location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_gps_location"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/standard_margin"
+        android:background="?colorAccent"
+        android:text="@string/submit"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="10pt"
+        android:padding="@dimen/half_standard_margin"/>
+
 
 </RelativeLayout>
