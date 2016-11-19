@@ -9,29 +9,23 @@ import org.json.JSONObject;
  */
 public class Restroom {
 
-    double lat, lng, rating;
-    String name, address, hours;
+    double lat, lng;
+    String name, address;
+    boolean locked;
 
-    public Restroom() {}
-
-    public Restroom(double lat, double lng, double rating, String name, String address,
-                    String hours) {
+    public Restroom(double lat, double lng, String name, String address, boolean locked) {
         this.lat = lat;
         this.lng = lng;
-        this.rating = rating;
         this.name = name;
         this.address = address;
-        this.hours = hours;
     }
 
     public Restroom(JSONObject restroom) {
         try {
             this.lat = restroom.getDouble("lat");
             this.lng = restroom.getDouble("lng");
-            this.rating = restroom.getDouble("rating");
             this.name = restroom.getString("name");
             this.address = restroom.getString("address");
-            this.hours = restroom.getString("hours");
         } catch (JSONException e) {
             // TODO: handle error
         }

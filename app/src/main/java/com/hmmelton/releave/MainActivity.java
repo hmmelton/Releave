@@ -6,10 +6,15 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,9 +27,14 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    @SuppressWarnings("unused")
+    private final String TAG = this.getClass().getSimpleName();
 
     private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
 
     // OnClick handler for FloatingActionButton
     @OnClick(R.id.fab) void onFabClick() {
@@ -48,6 +58,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         ButterKnife.bind(this);
 
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
     }
 
     /**
@@ -97,6 +113,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // Get current latitude & longitude
             LatLng currentLocation = new LatLng(latitude, longitude);
 
+
+
             /** For future reference - adding a marker: */
             // MarkerOptions markerOptions = new MarkerOptions();
             // markerOptions.position(currentLocation);
@@ -118,5 +136,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // Alert the user that his/her location could not be found
             Toast.makeText(this, mNoLocation, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "Connection failed: " + connectionResult.getErrorMessage());
     }
 }
