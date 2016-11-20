@@ -3,25 +3,38 @@ package com.hmmelton.releave;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.hmmelton.releave.models.Restroom;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -36,9 +49,42 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
 
+    private DatabaseReference mDatabase;
+
+    private boolean isLocked;
+
+    private LatLng mRestroomLocation;
+    private String mRestroomName, mRestroomAddress;
+
+    private final int PLACE_PICKER_REQUEST = 1;
+
+    @BindString(R.string.location_retrieval_error) protected String LOCATION_ERROR;
+    @BindString(R.string.upload) protected String UPLOAD;
+    @BindString(R.string.submit) protected String SUBMIT;
+    @BindString(android.R.string.cancel) protected String CANCEL;
+
     // OnClick handler for FloatingActionButton
     @OnClick(R.id.fab) void onFabClick() {
-        startActivity(new Intent(MainActivity.this, UploadActivity.class));
+        // Prepare dialog
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.add_restroom_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        // Grab views and set listeners
+        final Switch isLocked = (Switch) dialogView.findViewById(R.id.is_locked);
+        final ImageView mapIcon = (ImageView) dialogView.findViewById(R.id.gps_select);
+        mapIcon.setOnClickListener(view -> MainActivity.this.onLocationClick());
+        isLocked.setOnCheckedChangeListener((compoundButton, b) -> MainActivity.this.isLocked = b);
+
+        dialogBuilder.setTitle(UPLOAD);
+        // Set button click listeners
+        dialogBuilder.setPositiveButton(SUBMIT,
+                (dialogInterface, i) -> MainActivity.this.onSubmit());
+        dialogBuilder.setNegativeButton(CANCEL, (dialogInterface, i) -> dialogInterface.dismiss());
+
+        // Show
+        dialogBuilder.create().show();
     }
 
     // OnClick for profile image in AppBar
@@ -64,6 +110,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
+
+        this.mDatabase = FirebaseDatabase.getInstance().getReference();
+        this.isLocked = false;
     }
 
     /**
@@ -141,5 +190,79 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "Connection failed: " + connectionResult.getErrorMessage());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == this.PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this, data);
+                this.mRestroomLocation = place.getLatLng();
+                this.mRestroomName = place.getName().toString();
+                this.mRestroomAddress = place.getAddress().toString();
+            }
+        }
+    }
+
+    /**
+     * This method is called when a new restroom is being submitted.
+     */
+    protected void onSubmit() {
+        // Reverse geocode to find country/state/city of restroom
+        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.US);
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(this.mRestroomLocation.latitude, this.mRestroomLocation.longitude, 1);
+        } catch (Exception e) {
+            // Error getting addresses
+            Toast.makeText(this, this.LOCATION_ERROR, Toast.LENGTH_SHORT).show();
+        }
+
+        if (addresses == null || addresses.size() < 1) {
+            // No addresses
+            Toast.makeText(this, this.LOCATION_ERROR, Toast.LENGTH_SHORT).show();
+        } else {
+            // Get country/state/city
+            Address address = addresses.get(0);
+            String country = address.getCountryCode();
+            String province = address.getAdminArea();
+            String locality = address.getLocality();
+            String city = (locality != null ? locality : address.getSubLocality());
+            Log.e(TAG, String.format(Locale.US, "%s -> %s", locality, address.getSubLocality()));
+            String thoroughfare = mRestroomAddress.substring(0, mRestroomAddress.indexOf(","));
+            String zip = address.getPostalCode();
+
+            if (country != null && province != null && city != null && zip != null
+                    && !thoroughfare.equals("")) {
+                // Create restroom object
+                Restroom restroom = new Restroom(this.mRestroomLocation.latitude,
+                        this.mRestroomLocation.longitude, this.mRestroomName,
+                        thoroughfare, this.isLocked, city, province, zip);
+                // Upload new restroom to database
+                mDatabase.child("restrooms")
+                        .child(country)
+                        .child(province)
+                        .child(city)
+                        .child(thoroughfare)
+                        .setValue(restroom);
+            } else {
+                Log.e(TAG,
+                        String.format(Locale.US, "country: %s, state: %s, city: %s",
+                                country, province, city));
+            }
+        }
+    }
+
+    /**
+     * This method is called when the GPS button on the dialog is pressed.
+     */
+    protected void onLocationClick() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(MainActivity.this),
+                    MainActivity.this.PLACE_PICKER_REQUEST);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 }

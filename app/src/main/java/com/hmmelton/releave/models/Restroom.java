@@ -10,14 +10,19 @@ import org.json.JSONObject;
 public class Restroom {
 
     double lat, lng;
-    String name, address;
+    String name, address, city, state, zip;
     boolean locked;
 
-    public Restroom(double lat, double lng, String name, String address, boolean locked) {
+    public Restroom(double lat, double lng, String name, String address,
+                    boolean locked, String city, String state, String zip) {
         this.lat = lat;
         this.lng = lng;
         this.name = name;
         this.address = address;
+        this.locked = locked;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
     }
 
     public Restroom(JSONObject restroom) {
@@ -26,6 +31,10 @@ public class Restroom {
             this.lng = restroom.getDouble("lng");
             this.name = restroom.getString("name");
             this.address = restroom.getString("address");
+            this.city = restroom.getString("city");
+            this.state = restroom.getString("state");
+            this.zip = restroom.getString("zip");
+            this.locked = restroom.getBoolean("locked");
         } catch (JSONException e) {
             // TODO: handle error
         }
