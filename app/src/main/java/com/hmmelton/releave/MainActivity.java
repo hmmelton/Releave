@@ -3,6 +3,8 @@ package com.hmmelton.releave;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -77,14 +79,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapIcon.setOnClickListener(view -> MainActivity.this.onLocationClick());
         isLocked.setOnCheckedChangeListener((compoundButton, b) -> MainActivity.this.isLocked = b);
 
-        dialogBuilder.setTitle(UPLOAD);
-        // Set button click listeners
-        dialogBuilder.setPositiveButton(SUBMIT,
-                (dialogInterface, i) -> MainActivity.this.onSubmit());
-        dialogBuilder.setNegativeButton(CANCEL, (dialogInterface, i) -> dialogInterface.dismiss());
-
         // Show
-        dialogBuilder.create().show();
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
     }
 
     // OnClick for profile image in AppBar
