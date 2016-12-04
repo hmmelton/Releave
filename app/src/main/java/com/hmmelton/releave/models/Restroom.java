@@ -1,5 +1,8 @@
 package com.hmmelton.releave.models;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +15,7 @@ public class Restroom {
     double lat, lng;
     String name, address, city, state, zip;
     boolean locked;
+    FirebaseUser uploader;
 
     public Restroom(double lat, double lng, String name, String address,
                     boolean locked, String city, String state, String zip) {
@@ -23,6 +27,7 @@ public class Restroom {
         this.city = city;
         this.state = state;
         this.zip = zip;
+        this.uploader = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public Restroom(JSONObject restroom) {
