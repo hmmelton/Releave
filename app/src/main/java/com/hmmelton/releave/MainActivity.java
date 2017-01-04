@@ -1,24 +1,21 @@
 package com.hmmelton.releave;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.Switch;
+import android.view.ViewAnimationUtils;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -66,8 +63,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @BindString(android.R.string.cancel) protected String CANCEL;
 
     // OnClick handler for FloatingActionButton
-    @OnClick(R.id.fab) void onFabClick() {
-        // Prepare dialog
+    @OnClick(R.id.fab) void onFabClick(View view) {
+        /*// Prepare dialog
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = MainActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.add_restroom_dialog, null);
@@ -82,11 +79,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // Show
         AlertDialog dialog = dialogBuilder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.show();
+        dialog.show();*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int cx = view.getRight();
+            int cy = view.getBottom();
+            int finalRadius = 200;
+            Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+            view.setVisibility(View.VISIBLE);
+            anim.start();
+        }
     }
 
     // OnClick for profile image in AppBar
     @OnClick(R.id.profile_button) void onProfileClick() {
+
         startActivity(new Intent(MainActivity.this, ProfileActivity.class));
     }
 
