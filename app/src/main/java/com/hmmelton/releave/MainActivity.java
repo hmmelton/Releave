@@ -1,6 +1,5 @@
 package com.hmmelton.releave;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,11 +10,15 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,11 +34,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hmmelton.releave.models.Restroom;
+import com.hmmelton.releave.utils.AnimationHelper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -57,43 +64,40 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int PLACE_PICKER_REQUEST = 1;
 
+    // String Resources
     @BindString(R.string.location_retrieval_error) protected String LOCATION_ERROR;
     @BindString(R.string.upload) protected String UPLOAD;
     @BindString(R.string.submit) protected String SUBMIT;
     @BindString(android.R.string.cancel) protected String CANCEL;
 
+    // Views
+    @BindView(R.id.main_footer) protected LinearLayout mFooter;
+    @BindView(R.id.fab) protected FloatingActionButton mFab;
+    @BindView(R.id.main_content) protected CoordinatorLayout mContent;
+
+    // OnClick handler for locked button
+    @OnClick(R.id.locked_yes_button) protected void onYesClick() {
+        this.isLocked = true;
+        AnimationHelper.slideToBottom(mFooter);
+        mFab.setVisibility(View.VISIBLE);
+        this.onSubmit();
+    }
+    // OnClick handler for not locked button
+    @OnClick(R.id.locked_no_button) protected void onNoClick() {
+        this.isLocked = false;
+        AnimationHelper.slideToBottom(mFooter);
+        mFab.setVisibility(View.VISIBLE);
+        this.onSubmit();
+    }
     // OnClick handler for FloatingActionButton
     @OnClick(R.id.fab) void onFabClick(View view) {
-        /*// Prepare dialog
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        LayoutInflater inflater = MainActivity.this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.add_restroom_dialog, null);
-        dialogBuilder.setView(dialogView);
-
-        // Grab views and set listeners
-        final Switch isLocked = (Switch) dialogView.findViewById(R.id.is_locked);
-        final ImageView mapIcon = (ImageView) dialogView.findViewById(R.id.gps_select);
-        mapIcon.setOnClickListener(view -> MainActivity.this.onLocationClick());
-        isLocked.setOnCheckedChangeListener((compoundButton, b) -> MainActivity.this.isLocked = b);
-
-        // Show
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.show();*/
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int cx = view.getRight();
-            int cy = view.getBottom();
-            int finalRadius = 200;
-            Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-            view.setVisibility(View.VISIBLE);
-            anim.start();
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(MainActivity.this),
+                    MainActivity.this.PLACE_PICKER_REQUEST);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
-    }
-
-    // OnClick for profile image in AppBar
-    @OnClick(R.id.profile_button) void onProfileClick() {
-
-        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
     }
 
     @BindString(R.string.no_location) String mNoLocation;
@@ -117,6 +121,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         this.mDatabase = FirebaseDatabase.getInstance().getReference();
         this.isLocked = false;
+        this.setLayoutListeners();
     }
 
     /**
@@ -204,8 +209,73 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 this.mRestroomLocation = place.getLatLng();
                 this.mRestroomName = place.getName().toString();
                 this.mRestroomAddress = place.getAddress().toString();
+
+                mFab.setVisibility(View.GONE);
+                AnimationHelper.slideFromBottom(mFooter);
+            } else {
+                // TODO: Handle this -- Alert dialog?
+                Log.e(TAG, String.format("Result code was: %s", resultCode));
             }
-        }
+        } else
+            Log.e(TAG, String.format("Request code was: %s", requestCode));
+
+    }
+
+    /**
+     * This method sets GlobalLayoutListeners for views who need to be measured
+     */
+    private void setLayoutListeners() {
+        mFooter.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Remove listener based on current device's SDK version
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mFooter.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } else {
+                    mFooter.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
+                // Hide footer off bottom of screen
+                CoordinatorLayout.LayoutParams params =
+                        (CoordinatorLayout.LayoutParams) mFooter.getLayoutParams();
+                params.setMargins(0, 0, 0, -1 * mFooter.getHeight());
+                mFooter.setLayoutParams(params);
+            }
+        });
+    }
+
+    /**
+     * This method notifies the user that the bathroom they created has been uploaded to the
+     * database, and gives them the option to undo their action.
+     * @param location Keys to the location of the bathroom in the database
+     */
+    private void showConfirmationSnackbar(Map<String, String> location) {
+        // Display Snackbar with undo action to user
+        Snackbar
+                .make(mContent, R.string.bathroom_uploaded, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, view -> mDatabase.child("restrooms")
+                        .child(location.get("country"))
+                        .child(location.get("province"))
+                        .child(location.get("city"))
+                        .child(location.get("thoroughfare"))
+                        .removeValue()
+                        .addOnCompleteListener(task -> {
+                            // Removal over
+                            if (task.isSuccessful()) {
+                                // Removal was successful
+                                Snackbar
+                                        .make(mContent, R.string.undo_upload,
+                                                Snackbar.LENGTH_SHORT)
+                                        .show();
+                            } else {
+                                // Removal encountered an error
+                                Snackbar
+                                        .make(mContent, R.string.undo_upload_fail,
+                                                Snackbar.LENGTH_SHORT)
+                                        .show();
+                            }
+                        }))
+                .show();
     }
 
     /**
@@ -232,7 +302,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             String province = address.getAdminArea();
             String locality = address.getLocality();
             String city = (locality != null ? locality : address.getSubLocality());
-            Log.e(TAG, String.format(Locale.US, "%s -> %s", locality, address.getSubLocality()));
             String thoroughfare = mRestroomAddress.substring(0, mRestroomAddress.indexOf(","));
             String zip = address.getPostalCode();
 
@@ -248,25 +317,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .child(province)
                         .child(city)
                         .child(thoroughfare)
-                        .setValue(restroom);
+                        .setValue(restroom)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // Database upload was successful
+
+                                // Create map with data leading to uploaded item
+                                Map<String, String> param = new HashMap<>();
+                                param.put("country", country);
+                                param.put("province", province);
+                                param.put("city", city);
+                                param.put("thoroughfare", thoroughfare);
+                                this.showConfirmationSnackbar(param);
+                            } else {
+                                // Database upload was not successful
+                                Toast.makeText(this, R.string.database_error_toast,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
             } else {
                 Log.e(TAG,
                         String.format(Locale.US, "country: %s, state: %s, city: %s",
                                 country, province, city));
             }
-        }
-    }
-
-    /**
-     * This method is called when the GPS button on the dialog is pressed.
-     */
-    protected void onLocationClick() {
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-        try {
-            startActivityForResult(builder.build(MainActivity.this),
-                    MainActivity.this.PLACE_PICKER_REQUEST);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
         }
     }
 }

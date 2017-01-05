@@ -9,15 +9,20 @@
 
     <!-- Strings for Main Screen -->
     <string name="no_location">Could not find location</string>
+    <string name="is_bathroom_locked">Is this bathroom locked?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="lock_image_desc">lock</string>
+    <string name="database_error_toast">Error uploading to database</string>
+    <string name="bathroom_uploaded">Bathroom uploaded</string>
+    <string name="undo_upload">Upload removed!</string>
+    <string name="undo_upload_fail">Failed to remove upload</string>
+    <string name="undo">UNDO</string>
 
     <!-- Strings for Login Screen -->
     <string name="or">Or</string>
     <string name="google_login">Login with Google</string>
     <string name="title_activity_profile">ProfileActivity</string>
-
-    <!-- Strings for Profile Screen -->
-    <string name="sign_out">Sign Out</string>
-    <string name="profile">Profile</string>
 
     <!-- Strings for Upload Screen -->
     <string name="upload">Add Restroom</string>
