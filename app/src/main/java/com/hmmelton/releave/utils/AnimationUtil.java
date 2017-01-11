@@ -8,7 +8,7 @@ import android.view.View;
  * This class is a helper used to
  */
 
-public class AnimationHelper {
+public class AnimationUtil {
 
     /**
      * This method slides a view onto the screen from the bottom.
