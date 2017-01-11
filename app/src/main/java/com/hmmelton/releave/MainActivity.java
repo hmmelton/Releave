@@ -31,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,7 +50,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMapClickListener {
 
     @SuppressWarnings("unused")
     private final String TAG = this.getClass().getSimpleName();
@@ -143,10 +145,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // Set map's listeners here, because they reference UI
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMapClickListener(this);
         mMapHelper = new MapHelper(googleMap, mDatabase, this);
         // Set zoom preferences
         mMapHelper.setMinMaxZoom(10.0f, 16.0f);
         mMapHelper.setInitialMapView();
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mFab.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        mFab.setVisibility(View.GONE);
+        return false;
     }
 
     @Override
