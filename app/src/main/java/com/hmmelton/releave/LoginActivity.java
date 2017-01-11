@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     // endregion
 
     private final String TAG = getClass().getSimpleName();
-    private CallbackManager callbackManager;
-    private FirebaseAuth auth;
-    private FirebaseAuth.AuthStateListener authListener;
+    private CallbackManager mCallbackManager;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +56,14 @@ public class LoginActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         // Initialize Facebook SDK
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
         // Initialize Firebase Facebook login
-        this.auth = FirebaseAuth.getInstance();
+        this.mAuth = FirebaseAuth.getInstance();
         // Initialize Facebook login
         initFacebookLogin();
-        // Initialize Firebase auth listener
-        authListener = firebaseAuth -> {
+        // Initialize Firebase mAuth listener
+        mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 // User is signed in
@@ -78,20 +79,20 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // required by Facebook SDK
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authListener);
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (authListener != null) {
-            auth.removeAuthStateListener(authListener);
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
@@ -99,9 +100,9 @@ public class LoginActivity extends AppCompatActivity {
      * This method initializes the Facebook login listener
      */
     private void initFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create();
+        mCallbackManager = CallbackManager.Factory.create();
         // Register callback for later use
-        LoginManager.getInstance().registerCallback(callbackManager,
+        LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -125,12 +126,12 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        auth.signInWithCredential(credential)
+        mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                     // If sign in fails, display a message to the user. If sign in succeeds
-                    // the auth state listener will be notified and logic to handle the
+                    // the mAuth state listener will be notified and logic to handle the
                     // signed in user can be handled in the listener.
                     if (!task.isSuccessful()) {
                         Log.w(TAG, "signInWithCredential", task.getException());
@@ -139,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         mCover.setVisibility(View.VISIBLE);
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
                         finish();
                     }
                 });

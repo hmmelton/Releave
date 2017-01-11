@@ -7,12 +7,12 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -211,6 +211,15 @@ public class MapHelper {
         markerOptions.position(currentLocation);
         markerOptions.title(String.format("%s", restroom.name));
         markerOptions.snippet(String.format("%s", restroom.address));
+
         this.mMap.addMarker(markerOptions);
+    }
+
+    /**
+     * This method returns the current bounds of the map.
+     * @return current bounds of the map
+     */
+    public LatLngBounds getMapBounds() {
+        return mMap.getProjection().getVisibleRegion().latLngBounds;
     }
 }

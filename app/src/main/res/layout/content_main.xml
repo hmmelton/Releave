@@ -8,4 +8,6 @@
           tools:context="com.hmmelton.releave.MainActivity"
           android:name="com.google.android.gms.maps.SupportMapFragment"
           app:layout_behavior="@string/appbar_scrolling_view_behavior"
-          tools:showIn="@layout/activity_main"/>
+          tools:showIn="@layout/activity_main"
+          class="com.google.android.gms.maps.SupportMapFragment"/>
+

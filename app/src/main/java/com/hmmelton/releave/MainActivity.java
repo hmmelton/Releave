@@ -10,13 +10,18 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
@@ -26,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hmmelton.releave.helpers.MapHelper;
@@ -42,7 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener {
 
     @SuppressWarnings("unused")
@@ -50,7 +56,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private MapHelper mMapHelper;
     private GoogleApiClient mGoogleApiClient;
-    private Map<String, Double> mMapBounds;
 
     private DatabaseReference mDatabase;
 
@@ -73,7 +78,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @BindView(R.id.main_footer) protected LinearLayout mFooter;
     @BindView(R.id.fab) protected FloatingActionButton mFab;
     @BindView(R.id.main_content) protected CoordinatorLayout mContent;
-
+    @BindView(R.id.toolbar) protected Toolbar mToolbar;
     // endregion
 
     // region OnClick Handlers
@@ -94,6 +99,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     // OnClick handler for FloatingActionButton
     @OnClick(R.id.fab) void onFabClick(View view) {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        builder.setLatLngBounds(mMapHelper.getMapBounds());
         try {
             startActivityForResult(builder.build(MainActivity.this),
                     MainActivity.this.PLACE_PICKER_REQUEST);
@@ -113,6 +119,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -165,6 +172,38 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         } else
             Log.e(TAG, String.format("Request code was: %s", requestCode));
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle based on item id
+        switch (item.getItemId()) {
+            case R.id.menu_log_out:
+                logOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * This method logs the user out of the application
+     */
+    private void logOut() {
+        // Log out of Firebase
+        FirebaseAuth.getInstance().signOut();
+        // Log out of Facebook
+        LoginManager.getInstance().logOut();
+        startActivity(new Intent(this, LoginActivity.class));
+        // Override for smooth transition
+        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
     }
 
     /**

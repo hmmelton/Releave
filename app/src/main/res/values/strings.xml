@@ -7,6 +7,9 @@
     <!-- For custom Chrome tab login -->
     <string name="fb_login_protocol_scheme">fb107305349752171</string>
 
+    <!-- Strings for menu -->
+    <string name="log_out">Log out</string>
+
     <!-- Strings for Main Screen -->
     <string name="no_location">Could not find location</string>
     <string name="is_bathroom_locked">Is this bathroom locked?</string>
