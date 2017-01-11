@@ -28,6 +28,10 @@ public class Restroom {
         this.uploader = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
+    // Used by Firebase
+    public Restroom() {}
+
+    // TODO: Do I even need this?
     public Restroom(JSONObject restroom) {
         try {
             this.lat = restroom.getDouble("lat");
@@ -38,6 +42,7 @@ public class Restroom {
             this.state = restroom.getString("state");
             this.zip = restroom.getString("zip");
             this.locked = restroom.getBoolean("locked");
+            this.uploader = restroom.getString("uploader");
         } catch (JSONException e) {
             // TODO: handle error
         }

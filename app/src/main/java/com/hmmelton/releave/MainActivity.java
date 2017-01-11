@@ -1,19 +1,15 @@
 package com.hmmelton.releave;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -26,15 +22,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.hmmelton.releave.helpers.MapHelper;
 import com.hmmelton.releave.models.Restroom;
-import com.hmmelton.releave.utils.AnimationHelper;
+import com.hmmelton.releave.utils.AnimationUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +48,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @SuppressWarnings("unused")
     private final String TAG = this.getClass().getSimpleName();
 
-    private GoogleMap mMap;
+    private MapHelper mMapHelper;
     private GoogleApiClient mGoogleApiClient;
+    private Map<String, Double> mMapBounds;
 
     private DatabaseReference mDatabase;
 
@@ -64,28 +61,33 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int PLACE_PICKER_REQUEST = 1;
 
-    // String Resources
+    // region String Resources
     @BindString(R.string.location_retrieval_error) protected String LOCATION_ERROR;
     @BindString(R.string.upload) protected String UPLOAD;
     @BindString(R.string.submit) protected String SUBMIT;
     @BindString(android.R.string.cancel) protected String CANCEL;
+    @BindString(R.string.no_location) String mNoLocation;
+    // endregion
 
-    // Views
+    // region Views
     @BindView(R.id.main_footer) protected LinearLayout mFooter;
     @BindView(R.id.fab) protected FloatingActionButton mFab;
     @BindView(R.id.main_content) protected CoordinatorLayout mContent;
 
+    // endregion
+
+    // region OnClick Handlers
     // OnClick handler for locked button
     @OnClick(R.id.locked_yes_button) protected void onYesClick() {
         this.isLocked = true;
-        AnimationHelper.slideToBottom(mFooter);
+        AnimationUtil.slideToBottom(mFooter);
         mFab.setVisibility(View.VISIBLE);
         this.onSubmit();
     }
     // OnClick handler for not locked button
     @OnClick(R.id.locked_no_button) protected void onNoClick() {
         this.isLocked = false;
-        AnimationHelper.slideToBottom(mFooter);
+        AnimationUtil.slideToBottom(mFooter);
         mFab.setVisibility(View.VISIBLE);
         this.onSubmit();
     }
@@ -100,7 +102,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @BindString(R.string.no_location) String mNoLocation;
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,66 +136,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        mMapHelper = new MapHelper(googleMap, mDatabase, this);
         // Set zoom preferences
-        mMap.setMinZoomPreference(10.0f);
-        mMap.setMaxZoomPreference(16.0f);
-
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        List<String> providers = manager.getProviders(true);
-
-        // Check if user has given permission to access location
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        // Cycle through location providers until one finds the user's current location
-        Location location = null;
-        for (int i = 0; i < providers.size(); i++) {
-            location = manager.getLastKnownLocation(providers.get(i));
-            if (location != null) {
-                break;
-            }
-        }
-
-        // User's current latitude and longitude
-        double latitude;
-        double longitude;
-
-        if (location != null) {
-            // Location was found - grab lat & long
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-
-            // Get current latitude & longitude
-            LatLng currentLocation = new LatLng(latitude, longitude);
-
-
-
-            /** For future reference - adding a marker: */
-            // MarkerOptions markerOptions = new MarkerOptions();
-            // markerOptions.position(currentLocation);
-            // markerOptions.title("You are here");
-            // Marker locationMarker = mMap.addMarker(markerOptions);
-            // locationMarker.showInfoWindow();
-
-            // Move to location on map
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-            // 14x zoom in on location
-            mMap.animateCamera(CameraUpdateFactory
-                    .newLatLngZoom(new LatLng(latitude, longitude), 14.0f));
-
-            // Display settings
-            mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-            mMap.getUiSettings().setMapToolbarEnabled(true);
-            mMap.setMyLocationEnabled(true);
-        } else {
-            // Alert the user that his/her location could not be found
-            Toast.makeText(this, mNoLocation, Toast.LENGTH_LONG).show();
-        }
+        mMapHelper.setMinMaxZoom(10.0f, 16.0f);
+        mMapHelper.setInitialMapView();
     }
 
     @Override
@@ -211,7 +157,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 this.mRestroomAddress = place.getAddress().toString();
 
                 mFab.setVisibility(View.GONE);
-                AnimationHelper.slideFromBottom(mFooter);
+                AnimationUtil.slideFromBottom(mFooter);
             } else {
                 // TODO: Handle this -- Alert dialog?
                 Log.e(TAG, String.format("Result code was: %s", resultCode));
@@ -275,6 +221,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                         .show();
                             }
                         }))
+                .setActionTextColor(Color.WHITE)
                 .show();
     }
 
