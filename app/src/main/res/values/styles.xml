@@ -14,6 +14,10 @@
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar"/>
 
+    <style name="AppTheme.NoActionBar.SemitransparentStatusBar">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <!-- Style for login buttons -->
     <style name="LoginButton">
         <item name="android:layout_height">wrap_content</item>

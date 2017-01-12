@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.hmmelton.releave.utils.UiUtil;
 
 import java.util.Arrays;
 
@@ -32,10 +34,10 @@ public class LoginActivity extends AppCompatActivity {
     // region Views
     @BindView(R.id.facebook_login)
     protected TextView mFbLoginButton;
-    @BindView(R.id.google_login)
-    protected TextView mGoogleLoginButton;
     @BindView(R.id.cover)
     protected RelativeLayout mCover;
+    @BindView(R.id.login_title) protected TextView mTitle;
+    @BindView(R.id.activity_login) protected LinearLayout mContent;
     // endregion
     // region OnClicks
     @OnClick(R.id.facebook_login) void onFBLoginClick() {
@@ -55,11 +57,13 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
-        // Initialize Facebook SDK
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
+        UiUtil.setCustomFont(mTitle, "fonts/Rubik-Regular.ttf");
 
         // Initialize Firebase Facebook login
         this.mAuth = FirebaseAuth.getInstance();
+        // Initialize Facebook
+        FacebookSdk.sdkInitialize(getApplicationContext());
         // Initialize Facebook login
         initFacebookLogin();
         // Initialize Firebase mAuth listener
@@ -80,6 +84,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // required by Facebook SDK
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            mContent.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);}
     }
 
     @Override
@@ -106,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Log.e(TAG, "fb logged in");
                         handleFacebookAccessToken(loginResult.getAccessToken());
                     }
 
@@ -123,8 +133,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {

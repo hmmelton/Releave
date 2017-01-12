@@ -23,9 +23,8 @@
     <string name="undo">UNDO</string>
 
     <!-- Strings for Login Screen -->
-    <string name="or">Or</string>
-    <string name="google_login">Login with Google</string>
     <string name="title_activity_profile">ProfileActivity</string>
+    <string name="login_img_desc">Releave logo</string>
 
     <!-- Strings for Upload Screen -->
     <string name="upload">Add Restroom</string>

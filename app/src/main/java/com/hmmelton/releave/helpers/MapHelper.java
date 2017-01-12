@@ -2,6 +2,7 @@ package com.hmmelton.releave.helpers;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,8 +12,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -48,6 +52,8 @@ public class MapHelper {
         this.mMap = map;
         this.mDatabaseReference = databaseReference;
         this.mContext = context;
+
+        //this.mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
     }
 
     /**
@@ -211,8 +217,15 @@ public class MapHelper {
         markerOptions.position(currentLocation);
         markerOptions.title(String.format("%s", restroom.name));
         markerOptions.snippet(String.format("%s", restroom.address));
+        // Grab custom icon from files
+        BitmapDescriptor bmp = BitmapDescriptorFactory
+                .fromBitmap(BitmapFactory
+                        .decodeResource(mContext.getResources(), R.drawable.ic_custom_marker));
+        // Set custom marker image
+        markerOptions.icon(bmp);
 
-        this.mMap.addMarker(markerOptions);
+        Marker marker = this.mMap.addMarker(markerOptions);
+        marker.setTag(restroom.locked);
     }
 
     /**

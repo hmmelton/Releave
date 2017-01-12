@@ -7,6 +7,7 @@ import com.facebook.appevents.AppEventsLogger;
 
 /**
  * Created by harrisonmelton on 11/5/16.
+ * Application class
  */
 
 public class ReleaveApplication extends Application {

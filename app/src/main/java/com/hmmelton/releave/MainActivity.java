@@ -19,8 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,6 +40,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.hmmelton.releave.helpers.MapHelper;
 import com.hmmelton.releave.models.Restroom;
 import com.hmmelton.releave.utils.AnimationUtil;
+import com.hmmelton.releave.utils.UiUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @BindView(R.id.fab) protected FloatingActionButton mFab;
     @BindView(R.id.main_content) protected CoordinatorLayout mContent;
     @BindView(R.id.toolbar) protected Toolbar mToolbar;
+    @BindView(R.id.toolbar_title) protected TextView mTitle;
     // endregion
 
     // region OnClick Handlers
@@ -122,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+        UiUtil.setCustomFont(mTitle, "fonts/Rubik-Medium.ttf");
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)

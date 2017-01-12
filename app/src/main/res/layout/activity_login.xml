@@ -1,34 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     android:id="@+id/activity_login"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hmmelton.releave.LoginActivity">
+    android:orientation="vertical"
+    tools:context="com.hmmelton.releave.LoginActivity"
+    android:weightSum="10">
 
-    <TextView
-        android:id="@+id/or_separator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/or"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/facebook_login"
-        style="@style/LoginButton"
-        android:text="@string/com_facebook_loginview_log_in_button_long"
-        android:background="@color/com_facebook_blue"
-        android:layout_above="@id/or_separator"
-        android:layout_marginBottom="@dimen/standard_margin"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerInParent="true">
 
-    <TextView
-        android:id="@+id/google_login"
-        style="@style/LoginButton"
-        android:text="@string/google_login"
-        android:background="#4285F4"
-        android:layout_below="@id/or_separator"
-        android:layout_marginTop="@dimen/standard_margin"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/app_logo_no_bg"
+                android:contentDescription="@string/login_img_desc"/>
+
+            <TextView
+                android:id="@+id/login_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="20pt"
+                android:layout_marginTop="@dimen/standard_margin"
+                android:fontFamily=""/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <TextView
+            android:id="@+id/facebook_login"
+            style="@style/LoginButton"
+            android:text="@string/com_facebook_loginview_log_in_button_long"
+            android:background="@drawable/rounded_login_button"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/cover"
@@ -44,4 +71,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>
